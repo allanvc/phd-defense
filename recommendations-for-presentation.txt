@@ -1,0 +1,19 @@
+
+
+NBB:
+- clarifying notation for the Ws
+- expand the slides with notation with more explanations
+
+reliability:
+- expand the slides with the ntations
+- clarify all the notations
+
+intro
+- keep but talk in general about the two methods that we proposed
+
+- do not present conclusion for the Bayesian - do a genral conclusion for both methods
+
+
+Bayes:
+- go fast over the Bayesian - focus more on the trunncated normal, the selection and results
+- eliminar a conclusao desta parte
