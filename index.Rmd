@@ -50,29 +50,32 @@ background-size: 5%
 
 <!-- > Objectives -->
 
-<br>
-<br>
+> (1) General Introduction <br><br>
 
-> (1) Introduction <br><br>
+> (2) Part I - Pairs Trading <br>
 
-> (2) Introduction to Pairs Trading Part <br>
+  > + (2.1) Introduction to Pairs Trading <br>
 
-> + (2.1) Bayesian Method <br>
+  > + (2.2) Bayesian Method <br>
 
-> + (2.2) Non-Overlapping Block Bootstrap <br><br>
+  > + (2.3) Non-Overlapping Block Bootstrap <br>
+  
+  > + (2.4) Conclusion <br><br>
 
-> (3) Introduction to Reliability Part <br>
+> (3) Part II - Equipment Life-cycle Prediction <br>
+  
+  > + (3.1) Introduction to Reliability Theory <br>
 
-> + (2.1) Predicting Equipment Life-cycle in the Absence of Data <br><br>
+  > + (3.2) Predicting Equipment Life-cycle in the Absence of Data <br>
 
-> (4) Conclusion <br><br>
+  > + (3.3) Conclusion <br><br>
 
 
 ---
 class: inverse, center, middle
 <!-- title-slide-section-grey,  -->
 
-## Introduction to Pairs Trading
+## Part I - Pairs Trading
 
 <!-- --- -->
 
@@ -254,14 +257,14 @@ class: highlight-last-item
 ---
 ###<font color =#4C5455><code>Cointegration strategy: __trading__</code></font>
 
-> Trading signals are generated based on the standard deviations of the spread $\hat{y_t} - \hat{\beta_1} x_t$
+> Trading signals are generated based on the standard deviations of the spread $y_t - \hat{\beta_1} x_t$
 
 .pull-left[
 
 <br>
 <br>
 
-> __Positions:__ whenever the Z-score $> \mid \pm k\sigma \mid$ thresholds
+> __Positions:__ whenever the Z-score crosses $\mid \pm k\sigma \mid$ thresholds
 
 > __Sizing:__ go long (or short) $\hat{\beta_1}$ dollars of stock $X$ for each dollar of stock $Y$
 
@@ -396,6 +399,64 @@ grid.arrange(p1, p2, ncol = 1, heights = c(2, 1))
 class: inverse, center, middle
 <!-- title-slide-section-grey,  -->
 ## Bayesian Method
+
+
+---
+###<font color =#4C5455><code> Theoretical Background: __hierarchical Bayesian model__ </code></font>
+
+<code> Using results from Gelfand _et al._ (1992), Hooten & Hefley (2019), and Rencher (2007), we have: </code>
+
+--
+<code> __Likelihood:__ </code>
+
+.my-style2[
+> $$y_i \sim \mathcal{N}(\boldsymbol{X\beta}, \sigma^2)$$
+
+]
+
+.my-style[
+where $\boldsymbol{\beta} = \begin{bmatrix} \beta_0 & \beta_1 \end{bmatrix}^\top$
+]
+
+
+--
+<code> __Priors:__ </code>
+.my-style2[
+> $$\boldsymbol{\beta} \sim \mathcal{TN}(\boldsymbol{\mu_{\beta}} = \mathbf{(X'X)^{-1}X'y}, \boldsymbol{\Sigma_{\beta}} = \sigma_0^2 \mathbf{(X'X)^{-1}}, \phantom{.}0, +\infty)$$ 
+
+]
+
+.my-style[
+where $\widehat{\sigma_0^2} = \frac{1}{n-2}\boldsymbol{y'(I - H)y}$ and $\boldsymbol{H = X(X'X)^{-1}X'}$
+
+]
+
+.my-style2[
+>  $$\sigma^2 \sim \mathcal{IG}(q, r)$$
+
+]
+
+
+--
+<code> __Conjugate full-conditional posteriors:__ </code>
+.my-style2[
+> $$\boldsymbol{\beta} \mid \boldsymbol{y}, \sigma^2 \equiv \mathcal{TN}(\boldsymbol{\mu} = \boldsymbol{A^{-1}b}, \boldsymbol{\Sigma} = \boldsymbol{A^{-1}}, \phantom{.}0, +\infty)$$
+
+]
+
+.my-style[
+where $\boldsymbol{A} \equiv \boldsymbol{X}^\top (\sigma^2\boldsymbol{I})^{-1} \boldsymbol{X} + \boldsymbol{\Sigma_\beta}^{-1}$ and $\boldsymbol{b} \equiv \boldsymbol{X}^\top (\sigma^2\boldsymbol{I})^{-1} \boldsymbol{y} + \boldsymbol{\Sigma_\beta}^{-1} \boldsymbol{\mu_\beta}$
+]
+
+.my-style2[
+> $$\sigma^2 \mid \boldsymbol{y, \beta} \equiv \mathcal{IG}(\tilde q, \tilde r)$$
+
+]
+
+.my-style[
+where $\tilde q = q + \frac{n}{2}$ and $\tilde r = \left[\frac{1}{2}\boldsymbol{(y - X\beta)'(y - X\beta)} + \frac{1}{r}\right]^{-1}$
+]
+
 
 ---
 ###<font color =#4C5455><code> Bayesian method: __mechanics__ </code></font>
@@ -690,65 +751,6 @@ create_beta1_distribution_plot_base_r(alpha_small = 0.05, alpha_large = 0.15)
 
 
 
-
-
-
----
-###<font color =#4C5455><code> Theoretical Background: __hierarchical Bayesian model__ </code></font>
-
-<code> Using results from Gelfand _et al._ (1992), Hooten & Hefley (2019), and Rencher (2007), we have: </code>
-
---
-<code> __Likelihood:__ </code>
-
-.my-style2[
-> $$y_i \sim \mathcal{N}(\boldsymbol{X\beta}, \sigma^2)$$
-
-]
-
-.my-style[
-where $\boldsymbol{\beta} = \begin{bmatrix} \beta_0 & \beta_1 \end{bmatrix}^\top$
-]
-
-
---
-<code> __Priors:__ </code>
-.my-style2[
-> $$\boldsymbol{\beta} \sim \mathcal{TN}(\boldsymbol{\mu_{\beta}} = \mathbf{(X'X)^{-1}X'y}, \boldsymbol{\Sigma_{\beta}} = \sigma_0^2 \mathbf{(X'X)^{-1}}, \phantom{.}0, +\infty)$$ 
-
-]
-
-.my-style[
-where $\widehat{\sigma_0^2} = \frac{1}{n-2}\boldsymbol{y'(I - H)y}$ and $\boldsymbol{H = X(X'X)^{-1}X'}$
-
-]
-
-.my-style2[
->  $$\sigma^2 \sim \mathcal{IG}(q, r)$$
-
-]
-
-
---
-<code> __Conjugate full-conditional posteriors:__ </code>
-.my-style2[
-> $$\boldsymbol{\beta} \mid \boldsymbol{y}, \sigma^2 \equiv \mathcal{TN}(\boldsymbol{\mu} = \boldsymbol{A^{-1}b}, \boldsymbol{\Sigma} = \boldsymbol{A^{-1}}, \phantom{.}0, +\infty)$$
-
-]
-
-.my-style[
-where $\boldsymbol{A} \equiv \boldsymbol{X}^\top (\sigma^2\boldsymbol{I})^{-1} \boldsymbol{X} + \boldsymbol{\Sigma_\beta}^{-1}$ and $\boldsymbol{b} \equiv \boldsymbol{X}^\top (\sigma^2\boldsymbol{I})^{-1} \boldsymbol{y} + \boldsymbol{\Sigma_\beta}^{-1} \boldsymbol{\mu_\beta}$
-]
-
-.my-style2[
-> $$\sigma^2 \mid \boldsymbol{y, \beta} \equiv \mathcal{IG}(\tilde q, \tilde r)$$
-
-]
-
-.my-style[
-where $\tilde q = q + \frac{n}{2}$ and $\tilde r = \left[\frac{1}{2}\boldsymbol{(y - X\beta)'(y - X\beta)} + \frac{1}{r}\right]^{-1}$
-]
-
 ---
 class: inverse, center, middle
 <!-- title-slide-section-grey,  -->
@@ -769,7 +771,7 @@ class: inverse, center, middle
 > 2 years of data: __`02-01-2023 - 01-31-2025`__;<br><br>
 
 --
-> Backtest consisted of sliding window with 3 periods: forming `[t-1]` | decision `[t]` | trading `[t+1]`;<br><br>
+> Backtest consisted of sliding window with 3 periods: formation | decision | trading; <br><br>
 
 --
 > Parameters: sizes $w \in \{65, 130\}$ and quantile parameter $\alpha \in \{0.05, 0.15\}$; <br><br>
@@ -838,7 +840,7 @@ tabela <- data.frame(
 
 # Gerando a tabela bonita em HTML com paginação
 tabela %>%
-  kable("html", digits = 1#, 
+  kable("html", digits = 2#, 
         #caption = "Performance of the Bayesian method in correctly rejecting false positives."
         ) %>%
   kable_styling("striped", full_width = F, position = "center") %>%
@@ -859,6 +861,78 @@ class: inverse, center, middle
 
 ## Non-Overlapping Block Bootstrap
 
+
+---
+###<font color =#4C5455><code> Theoretical Background: __non-overlapping block bootstrap__ </code></font>
+
+<code> Inspired in Lahiri (2003), we have: </code>
+
+<br>
+
+--
+<code> __Bootstrap sample__ </code> $\leftrightarrow$ <code> __Original sample__: </code>
+
+$$(W^*_{(j-1)b+1}, W^*_{(j-1)b+2}, \ldots, W^*_{jb}) = B_{I_j} = (W_{(I_j-1)b+1}, W_{(I_j-1)b+2}, \ldots, W_{I_jb})$$
+
+.my-style2[
+for $j = 1, 2, \ldots, k$
+]
+
+
+Where:
+
+<!-- > j is a specific block; -->
+
+> $b$ is the block size;
+
+> $W$ represents an observation in each type of sample;
+
+> left side represents j-th block from bootstrap sample;
+
+> right side represents $I_j$-th block from original sample
+
+> $I_1, I_2, \ldots, I_k$ are random indices indicating which original block will be used to form the j-th bootstrap block;
+
+<!-- ??? iterate over the possible values  -->
+
+
+---
+###<font color =#4C5455><code> Theoretical Background: __non-overlapping block bootstrap__ </code></font>
+
+<br>
+<br>
+<br>
+
+<code> __Adaptation for partial end blocks:__ </code>
+
+\begin{equation}
+B_j=\begin{cases}(W_{(j-1)b+1}, W_{(j-1)b+2}, \ldots, W_{jb}), & \text{if } j < k' \\ (W_{(j-1)b+1}, W_{(j-1)b+2}, \ldots, W_n), & \text{if } j = k'\end{cases}
+\end{equation}
+
+
+__ where $k' = \lceil n/b \rceil$. __
+
+
+
+
+---
+###<font color =#4C5455><code> Theoretical Background: __consistency of the NBB procedure for__ </code> $\beta_1$ </font> 
+
+<code> Using results from Lahiri (2003), Bradley (2005), Hamilton (1994), Skorokhod (1965), and Billingsley (1999), we can verify that </code>
+
+$$\mathbb{P}^* \left( \sqrt{n}(\hat{\beta}_1^* - \hat{\beta}_1) \leq x \right) 
+    \stackrel{p}{\to} \mathbb{P} \left( \sqrt{n}(\hat{\beta}_1 - \beta_1) \leq x \right) \quad \text{as } n \to \infty$$
+
+... after demonstrating that: (1) the bootstrap variance estimator correctly converges to the true variance $V$; and (2) the bootstrap estimator has the same asymptotic normality as the original OLS estimator $\sqrt{n} (\hat{\beta}_1 - \beta_1) \stackrel{d}{\to} \mathcal{N}(0, V)$:
+
+<br>
+
+$$\text{Var}^*(\sqrt{n}(\hat{\beta}_1^* - \hat{\beta}_1)) \stackrel{p}{\to} V$$
+
+
+<br>
+
+$$\sqrt{n} (\hat{\beta}_1^* - \hat{\beta}_1) \stackrel{d^*}{\to} \mathcal{N}(0, V)$$
 
 
 ---
@@ -1104,77 +1178,6 @@ create_beta1_distribution_plot_normal(mean_beta = 1.5, sd_beta = 0.3, alpha_smal
 
 
 
----
-###<font color =#4C5455><code> Theoretical Background: __non-overlapping block bootstrap__ </code></font>
-
-<code> Inspired in Lahiri (2003), we have: </code>
-
-<br>
-
---
-<code> __Bootstrap sample__ </code> $\leftrightarrow$ <code> __Original sample__: </code>
-
-$$(W^*_{(j-1)b+1}, W^*_{(j-1)b+2}, \ldots, W^*_{jb}) = B_{I_j} = (W_{(I_j-1)b+1}, W_{(I_j-1)b+2}, \ldots, W_{I_jb})$$
-
-.my-style2[
-for $j = 1, 2, \ldots, k$
-]
-
-
-Where:
-
-<!-- > j is a specific block; -->
-
-> $b$ is the block size;
-
-> $W$ represents an observation in each type of sample;
-
-> left side represents j-th block from bootstrap sample;
-
-> right side represents $I_j$-th block from original sample
-
-> $I_1, I_2, \ldots, I_k$ are random indices indicating which original block will be used to form the j-th bootstrap block;
-
-<!-- ??? iterate over the possible values  -->
-
-
----
-###<font color =#4C5455><code> Theoretical Background: __non-overlapping block bootstrap__ </code></font>
-
-<br>
-<br>
-<br>
-
-<code> __Adaptation for partial end blocks:__ </code>
-
-\begin{equation}
-B_j=\begin{cases}(W_{(j-1)b+1}, W_{(j-1)b+2}, \ldots, W_{jb}), & \text{if } j < k' \\ (W_{(j-1)b+1}, W_{(j-1)b+2}, \ldots, W_n), & \text{if } j = k'\end{cases}
-\end{equation}
-
-
-__ where $k' = \lceil n/b \rceil$. __
-
-
-
-
----
-###<font color =#4C5455><code> Theoretical Background: __consistency of the NBB procedure for__ </code> $\beta_1$ </font> 
-
-<code> Using results from Lahiri (2003), Bradley (2005), Hamilton (1994), Skorokhod (1965), and Billingsley (1999), we can verify that </code>
-
-$$\mathbb{P}^* \left( \sqrt{n}(\hat{\beta}_1^* - \hat{\beta}_1) \leq x \right) 
-    \stackrel{p}{\to} \mathbb{P} \left( \sqrt{n}(\hat{\beta}_1 - \beta_1) \leq x \right) \quad \text{as } n \to \infty$$
-
-... after demonstrating that the variance of the bootstrap variance estimator correctly converges to the true variance $V$ and the same asymptotic normality as the original OLS estimator $\sqrt{n} (\hat{\beta}_1 - \beta_1) \stackrel{d}{\to} \mathcal{N}(0, V)$:
-
-<br>
-
-$$\text{Var}^*(\sqrt{n}(\hat{\beta}_1^* - \hat{\beta}_1)) \stackrel{p}{\to} V$$
-
-
-<br>
-
-$$\sqrt{n} (\hat{\beta}_1^* - \hat{\beta}_1) \stackrel{d^*}{\to} \mathcal{N}(0, V)$$
 
 
 
@@ -1198,10 +1201,10 @@ class: inverse, center, middle
 > 2 years of data: __`02-01-2023 - 01-31-2025`__;<br><br>
 
 --
-> Backtest consisted of sliding window with 3 periods: forming `[t-1]` | decision `[t]` | trading `[t+1]`;<br><br>
+> Backtest consisted of sliding window with 3 periods: formation | decision | trading; <br><br>
 
 --
-> Parameters: sizes $w \in \{65, 130\}$, quantile parameter $\alpha \in \{0.05, 0.15\}$, and block size $b \in \{13, 26, 39, 65\}$ <br><br>
+> Parameters: sizes $w \in \{65, 130\}$, quantile parameter $\alpha \in \{0.05, 0.15\}$, and block size $b \in \{13, 26, 39, 65\}$; <br><br>
 
 --
 > The algorithm was implemented in R
@@ -1293,9 +1296,27 @@ class: inverse, center, middle
 class: inverse, center, middle
 <!-- title-slide-section-grey,  -->
 
-## Equipment Life-time modeling in the absence of failure data
+## Part II - Equipment Life-cycle Prediction
+
+---
+###<font color =#4C5455><code> Introduction: __NBAF project__ </code></font>
+
+National Bio and Agro-Defense Facility (NBAF) 
 
 
+.pull-left[
+
+![](./img/nbaf1.png)
+![](./img/nbaf3.png)
+
+]
+
+
+.pull-right[
+
+![](./img/nbaf2.png)
+![](./img/nbaf4.png)
+]
 ---
 ###<font color =#4C5455><code> Introduction: __reliability theory__ </code></font>
 
@@ -1397,7 +1418,7 @@ Expanded into decision-based framework that prioritize __risk__ $\to$ probabilis
   
   > __(i)__ establishes a formal mechanism for transforming qualitative information into quantifiable probabilistic statements;
   
-  > __(ii)__ enables model to learn from operational data that preceds failure 
+  > __(ii)__ enables model to learn from operational data that precedes failure 
   
   <!-- ??? creates a strucuture for continuously refining predictions based on evolving operational information, even before actual failure occurs  -->
   
@@ -1421,7 +1442,7 @@ For each equipment $i$, we have:
 <br>
 
 \begin{equation}
-    t_i \sim \mathit{Wei}(\hat{k}_i, \hat{\lambda}_i) \\
+    t_i \sim \mathit{Wei}(k_i, \lambda_i) \\
     \text{ }\\
     k_i \sim \mathcal{LN}(\mu_i, \sigma_i^2) \\
     \text{ }\\
@@ -2014,19 +2035,28 @@ class: inverse, center, middle
 ---
 ###<font color =#4C5455><code> Conclusions </code></font>
 
+--
 > The proposed framework effectively circumvents the problem of scarce historical data; <br><br>
 
-> It integrates seamlessly with reliability theory; <br><br>
+> It integrates well with reliability theory; 
 
+<br>
+<br>
+
+--
 > Restrictions:<br>
   > + highly dependent on prior beliefs;<br>
-  > + disproportional weight to expected life parmeter (prior and likelihood);<br><br>
+  > + disproportional weight to expected life parmeter (prior and likelihood); 
   
+<br>
+<br>
+
+--
 > Future research: <br>
-  > Improve prior elicitation and validation;<br>
-  > Room to incorporate time-dependent covariates and other environmental factors;<br>
-  > Expand the hierarchical levels of the model;
-  > Empirical validation
+  > + Improve prior elicitation and validation;<br>
+  > + Room to incorporate other environmental and operational factors;<br>
+  > + Expand the hierarchical levels of the model;<br>
+  > + Simulation and further empirical validation
 
 
 
